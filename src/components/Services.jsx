@@ -25,7 +25,7 @@ const Services = () => {
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
-      class="w-10 h-10 text-blue-500"
+      className="w-10 h-10 text-blue-500"
     >
       <path
         stroke-linecap="round"
@@ -36,7 +36,7 @@ const Services = () => {
   );
 
   return (
-    <div className="p-10 m-auto grid grid-cols-1 md:grid-cols-4 place-items-center gap-10">
+    <div className="p-10 m-auto grid grid-cols-2 md:grid-cols-4 place-items-center gap-10">
       <div className="flex space-x-2">
         {oneclickIcon}
         <div>

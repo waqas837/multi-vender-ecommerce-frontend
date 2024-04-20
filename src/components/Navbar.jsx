@@ -10,14 +10,123 @@ const Navbar = () => {
   };
   return (
     <>
-      <div className="flex justify-around items-center my-14">
-        <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
-          <img src="file.jpg" class="h-8" alt="Flowbite Logo" />
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+      <div className="md:flex md:justify-around items-center py-14">
+        <a href="" className="items-center space-x-3 rtl:space-x-reverse">
+          <img
+            src="file.jpg"
+            className="h-8 hidden md:inline-block"
+            alt="Logo"
+          />
+          {/* <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
             Ecomm
-          </span>
+          </span> */}
+          {/* small screen search engine*/}
+          <div className="md:hidden">
+            {/* search input */}
+            <form>
+              <div className="flex">
+                <label
+                  for="search-dropdown"
+                  className="mb-2 text-lg font-medium text-white sr-only dark:text-white"
+                >
+                  Your Email
+                </label>
+                <button
+                  onClick={() => setshowdropdown(true)}
+                  id="dropdown-button"
+                  data-dropdown-toggle="dropdown"
+                  className="flex-shrink-0 z-10 inline-flex items-center py-4 px-4 text-lg font-medium text-center  bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+                  type="button"
+                >
+                  {!dropdownvalue ? "All categories" : dropdownvalue}
+                  <svg
+                    className="w-2.5 h-2.5 ms-2.5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 10 6"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 4 4 4-4"
+                    />
+                  </svg>
+                </button>
+                <div
+                  id="dropdown"
+                  className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+                >
+                  <ul
+                    className={`py-2 ${
+                      showdropdown || (dropdownvalue && "hidden")
+                    }  text-lg text-gray-700 dark:text-gray-200`}
+                    aria-labelledby="dropdown-button"
+                  >
+                    <li>
+                      <a
+                        onClick={() => handleDropDownClick("Shopping")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Shopping
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        onClick={() => handleDropDownClick("Images")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Images
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        onClick={() => handleDropDownClick("News")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        News
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        onClick={() => handleDropDownClick("Finance")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Finance
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div className="relative w-full">
+                  <input
+                    type="search"
+                    id="search-dropdown"
+                    className="border-red-400 block p-4 w-full z-20 bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 text-gray-700 dark:focus:border-blue-500 text-xl"
+                    placeholder="Search By Skills..."
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="absolute top-0 end-0 p-2.5 h-full text-lg font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+            </form>
+            {/* dropdown */}
+          </div>
+
+          {/*  end small screen search enigne*/}
         </a>
-        <div className="w-[50%]">
+        {/* search engine for the big devices */}
+        <div className="hidden md:block w-[50%]">
           <form>
             <div className="flex">
               <label
@@ -102,7 +211,7 @@ const Navbar = () => {
                 <input
                   type="search"
                   id="search-dropdown"
-                  className="block p-4 w-full z-20  bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 text-gray-700 dark:focus:border-blue-500 text-xl"
+                  className="border-red-400 block p-4 w-full z-20 bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 text-gray-700 dark:focus:border-blue-500 text-xl"
                   placeholder="Search By Skills..."
                   required
                 />
@@ -116,14 +225,15 @@ const Navbar = () => {
             </div>
           </form>
         </div>
-        <div className="flex justify-between w-[70px]">
+        {/* will be hidden for mobile devices */}
+        <div className="hidden md:flex justify-between w-[70px]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6 text-blue-500"
+            className="w-6 h-6 text-blue-500"
           >
             <path
               stroke-linecap="round"
@@ -135,27 +245,27 @@ const Navbar = () => {
         </div>
       </div>
       {/* second nav */}
-      <nav class="px-10 bg-blue-700 dark:bg-gray-900 w-full z-20 border-b border-gray-200 dark:border-gray-600">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
+      <nav className="px-10 bg-blue-700 dark:bg-gray-900 w-full z-20 border-b border-gray-200 dark:border-gray-600">
+        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
           {/* replace something else here */}
-          <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <button
-              onClick={() => (window.location.href = "/login")}
+          <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <Link
+              to="/login"
               type="button"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               Get started
-            </button>
+            </Link>
             <button
               data-collapse-toggle="navbar-sticky"
               type="button"
-              class="inline-flex items-center p-2 w-10 h-10 justify-center text-lg text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 w-10 h-10 justify-center text-lg text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               aria-controls="navbar-sticky"
               aria-expanded="false"
             >
-              <span class="sr-only">Open main menu</span>
+              <span className="sr-only">Open main menu</span>
               <svg
-                class="w-5 h-5"
+                className="w-5 h-5"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -172,14 +282,14 @@ const Navbar = () => {
             </button>
           </div>
           <div
-            class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+            className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
             id="navbar-sticky"
           >
-            <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
                 <a
                   href="#"
-                  class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:p-0"
+                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:p-0"
                   aria-current="page"
                 >
                   Home
@@ -188,7 +298,7 @@ const Navbar = () => {
               <li>
                 <a
                   href="#"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   About
                 </a>
@@ -196,7 +306,7 @@ const Navbar = () => {
               <li>
                 <a
                   href="#"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Services
                 </a>
@@ -204,7 +314,7 @@ const Navbar = () => {
               <li>
                 <a
                   href="#"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent  md:p-0  dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Contact
                 </a>
@@ -228,10 +338,10 @@ const Navbar = () => {
         <button
           title="Scroll to top"
           aria-label="Scroll to top"
-          className="rounded-lg shadow-lg"
+          className="rounded-lg shadow-sm"
           // [@click](/click)="window.scrollTo({ top: 0, behavior: 'smooth' })"
         >
-          Need any help?
+          <span>Need any help?</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"

@@ -1,12 +1,43 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { apiUrl } from "../apiUrl";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [showdropdown, setshowdropdown] = useState(false);
   const [dropdownvalue, setdropdownvalue] = useState("All Categories");
+  const navigate = useNavigate();
   const handleDropDownClick = (value) => {
     setdropdownvalue(value);
     setshowdropdown(false);
+  };
+  let userDetails = localStorage.getItem("cUser");
+  let userstatus = localStorage.getItem("userstatus");
+
+  console.log("userDetails", JSON.parse(userDetails));
+  // console.log("userstatus", JSON.parse(userstatus));
+
+  const gotoSellerAccount = async () => {
+    let userid = JSON.parse(userDetails)._id;
+    try {
+      let userType = "seller";
+      let { data } = await axios.post(
+        `${apiUrl}/user/switchAccount/${userid}/${userType}`
+      );
+      // dispatch(UserSignupDetails(data.data));
+      localStorage.setItem("userstatus", userType);
+      localStorage.setItem("cUser", JSON.stringify(data.data));
+      navigate(`/seller/${userid}`, { state: { userVisit: false } });
+      console.log("let logs the data", data);
+    } catch (error) {
+      console.log("Err in function getAllProductsData", error);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("cUser");
+    navigate("/login");
   };
   return (
     <>
@@ -241,7 +272,26 @@ const Navbar = () => {
               d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
-          <Link to="/login">Login</Link>
+          {!JSON.parse(userDetails) && <Link to="/login">Login</Link>}
+          {/* {JSON.parse(userDetails) && <>{JSON.parse(userDetails).email}</>} */}
+          {JSON.parse(userDetails) && (
+            <div class="py-8 px-8 mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
+              <div class="text-center space-y-2 sm:text-left">
+                <button
+                  onClick={gotoSellerAccount}
+                  class="text-slate-500 font-medium text-xs underline text-center py-2 cursor-pointer"
+                >
+                  Goto seller account
+                </button>
+                <button
+                  onClick={logout}
+                  className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       {/* second nav */}

@@ -275,11 +275,11 @@ const Navbar = () => {
           {!JSON.parse(userDetails) && <Link to="/login">Login</Link>}
           {/* {JSON.parse(userDetails) && <>{JSON.parse(userDetails).email}</>} */}
           {JSON.parse(userDetails) && (
-            <div class="py-8 px-8 mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
-              <div class="text-center space-y-2 sm:text-left">
+            <div className="py-8 px-8 mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
+              <div className="text-center space-y-2 sm:text-left">
                 <button
                   onClick={gotoSellerAccount}
-                  class="text-slate-500 font-medium text-xs underline text-center py-2 cursor-pointer"
+                  className="text-slate-500 font-medium text-xs underline text-center py-2 cursor-pointer"
                 >
                   Goto seller account
                 </button>

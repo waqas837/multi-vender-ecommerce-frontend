@@ -17,17 +17,26 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("cUser", JSON.stringify(data.data));
           // dispatch(UserSignupDetails(data.data));
-          toast.success("LoggedIn successfully.");
+
           setTimeout(() => {
             // toast("Redirecting to your profile...");
-            if (data.data.userType === "buyer")
+            if (data.data.userType === "buyer") {
               navigate(`/buyer/${data.data._id}`, {
                 state: { userVisit: false },
               });
-            if (data.data.userType === "seller")
+              toast.success("LoggedIn successfully.");
+            }
+
+            if (data.data.userType === "seller") {
               navigate(`/seller/${data.data._id}`, {
                 state: { userVisit: false },
               });
+              toast.success("LoggedIn successfully.");
+            }
+
+            if (data.data.userType === "admin")
+              toast.error("Invalid credentials");
+            return;
           }, 1000);
           return;
         }

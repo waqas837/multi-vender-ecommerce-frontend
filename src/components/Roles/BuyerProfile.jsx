@@ -79,6 +79,26 @@ const BuyerProfile = () => {
             <h1 className="py-5 text-3xl font-bold text-center text-gray-500 underline">
               {"Buyer Dashboard"}
             </h1>
+            <button
+              onClick={() => navigate(`/buyer/inbox/${userid}`)}
+              type="button"
+              class="relative inline-flex items-center p-3 text-sm font-medium text-center text-white   rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 border"
+            >
+              <svg
+                class="w-5 h-5 text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 16"
+              >
+                <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />
+                <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
+              </svg>
+              <span class="sr-only">Notifications</span>
+              <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+                20
+              </div>
+            </button>
             {!location.state.userVisit && (
               <button
                 onClick={logout}
@@ -89,17 +109,17 @@ const BuyerProfile = () => {
             )}
           </div>
 
-          <div class="pt-12 grid grid-cols-1 md:grid-cols-2 place-items-center">
-            <div class="w-[70%] mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
-              <div class="border-b px-4 pb-6">
-                <div class="text-center my-4">
+          <div className="pt-12 grid grid-cols-1 md:grid-cols-2 place-items-center">
+            <div className="w-[70%] mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
+              <div className="border-b px-4 pb-6">
+                <div className="text-center my-4">
                   <label
                     for="userprofile"
-                    class="inline-flex items-center justify-center w-32 h-32 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-full cursor-pointer my-6"
+                    className="inline-flex items-center justify-center w-32 h-32 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-full cursor-pointer my-6"
                   >
                     {userdata && (
                       <img
-                        class="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 mx-auto my-4"
+                        className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 mx-auto my-4"
                         src={`${apiUrl}/images/${userdata.profileImg}`}
                         alt=""
                       />
@@ -119,16 +139,16 @@ const BuyerProfile = () => {
                     {file2 && (
                       <button
                         type="submit"
-                        class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
+                        className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-200 via-red-300 to-yellow-200 group-hover:from-red-200 group-hover:via-red-300 group-hover:to-yellow-200 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400"
                       >
-                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                           Upload image!
                         </span>
                       </button>
                     )}
                   </form>
 
-                  <div class="py-2">
+                  <div className="py-2">
                     {!location.state.userVisit && (
                       <>
                         <h1 className="text-2xl">
@@ -138,12 +158,12 @@ const BuyerProfile = () => {
                         </h1>
                       </>
                     )}
-                    <h3 class="font-bold text-2xl text-gray-800 dark:text-white mb-1">
+                    <h3 className="font-bold text-2xl text-gray-800 dark:text-white mb-1">
                       {emailPrefix}
                     </h3>
-                    <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+                    <div className="inline-flex text-gray-700 dark:text-gray-300 items-center">
                       <svg
-                        class="h-5 w-5 text-gray-400 dark:text-gray-600 mr-1"
+                        className="h-5 w-5 text-gray-400 dark:text-gray-600 mr-1"
                         fill="currentColor"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -151,7 +171,7 @@ const BuyerProfile = () => {
                         height="24"
                       >
                         <path
-                          class=""
+                          className=""
                           d="M5.64 16.36a9 9 0 1 1 12.72 0l-5.65 5.66a1 1 0 0 1-1.42 0l-5.65-5.66zm11.31-1.41a7 7 0 1 0-9.9 0L12 19.9l4.95-4.95zM12 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
                         />
                       </svg>
@@ -159,16 +179,16 @@ const BuyerProfile = () => {
                     </div>
                   </div>
                 </div>
-                <div class="flex gap-2 px-2">
+                <div className="flex gap-2 px-2">
                   <button
                     onClick={() => navigate("/")}
-                    class="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2"
+                    className="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2"
                   >
                     Find Services
                   </button>
                 </div>
               </div>
-              <div class="px-4 py-4"></div>
+              <div className="px-4 py-4"></div>
             </div>
           </div>
         </div>

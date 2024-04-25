@@ -183,22 +183,26 @@ const Cards = () => {
                           href="#"
                           className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                         >
-                          <div className="flex justify-between w-[88px]">
+                          <div className="flex justify-between w-[130px]">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                              className="w-6 h-6"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="w-5 h-5"
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                                fill-rule="evenodd"
+                                d="M18 5.25a2.25 2.25 0 0 0-2.012-2.238A2.25 2.25 0 0 0 13.75 1h-1.5a2.25 2.25 0 0 0-2.238 2.012c-.875.092-1.6.686-1.884 1.488H11A2.5 2.5 0 0 1 13.5 7v7h2.25A2.25 2.25 0 0 0 18 11.75v-6.5ZM12.25 2.5a.75.75 0 0 0-.75.75v.25h3v-.25a.75.75 0 0 0-.75-.75h-1.5Z"
+                                clip-rule="evenodd"
+                              />
+                              <path
+                                fill-rule="evenodd"
+                                d="M3 6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm6.874 4.166a.75.75 0 1 0-1.248-.832l-2.493 3.739-.853-.853a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.154-.114l3-4.5Z"
+                                clip-rule="evenodd"
                               />
                             </svg>
-                            <span>Message</span>
+
+                            <span>Request order</span>
                           </div>
                         </a>
                       </div>
@@ -221,8 +225,10 @@ const Cards = () => {
                       </p>
                     </div>
                   </div>
-                ) : (val && val.userInfo && val.userInfo.email?
-                  "No Data Yet Found.":""
+                ) : val && val.userInfo && val.userInfo.email ? (
+                  "No Data Yet Found."
+                ) : (
+                  ""
                 )}
               </>
             ))}

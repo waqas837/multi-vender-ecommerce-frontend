@@ -6,6 +6,8 @@ import Home from "./components/Home";
 import SellerProfile from "./components/Roles/SellerProfile";
 import BuyerProfile from "./components/Roles/BuyerProfile";
 import AdminLogin from "./components/Roles/Admin/AdminLogin";
+import SellerInbox from "./components/Roles/SellerInbox";
+import BuyerInbox from "./components/Roles/BuyerInbox";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/signup" element={<Signup />} />
           <Route exact path="/seller/:userid" element={<SellerProfile />} />
+          <Route exact path="/seller/inbox/:userid" element={<SellerInbox />} />
+          <Route exact path="/buyer/inbox/:userid" element={<BuyerInbox />} />
           <Route exact path="/buyer/:buyerid" element={<BuyerProfile />} />
           <Route exact path="/Admin" element={<AdminLogin />} />
         </Routes>

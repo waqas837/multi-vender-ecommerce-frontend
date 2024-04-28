@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiUrl } from "../apiUrl";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { SocketContext } from "./Socketio/SocketContext";
 
 const Login = () => {
   const [sData, setsData] = useState(null);
+  const socket = useContext(SocketContext); // use the socket connection...
+
   const navigate = useNavigate();
   const loginIntoAccount = async (e) => {
     try {

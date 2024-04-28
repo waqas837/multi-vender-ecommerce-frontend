@@ -12,14 +12,15 @@ const Cards = () => {
   useEffect(() => {
     getAllGigs();
   }, []);
+  let userdata = localStorage.getItem("cUser");
+  let userdataparsed = JSON.parse(userdata);
+  let userid = userdataparsed._id;
 
   const getAllGigs = async () => {
     try {
       setloading(true);
-      // let userdata = localStorage.getItem("cUser");
-      // let userdataparsed = JSON.parse(userdata);
-      // let userid = userdataparsed._id;
 
+      // let userid = userdataparsed._id;
       let { data } = await axios.get(`${apiUrl}/user/getGigsRandom`);
       setallGigs(data.data || []);
       // dispatch(UserSignupDetails(data.data));
@@ -90,7 +91,10 @@ const Cards = () => {
             allGigs.map((val) => (
               <>
                 {/* // if not loading but seller data */}
-                {val && val.userInfo && val.userInfo.email ? (
+                {val &&
+                val.userInfo &&
+                val.userInfo.email &&
+                val.userInfo._id !== userid ? (
                   <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
                     <div className="flex justify-end px-4 pt-4">
                       <button
@@ -225,8 +229,6 @@ const Cards = () => {
                       </p>
                     </div>
                   </div>
-                ) : val && val.userInfo && val.userInfo.email ? (
-                  "No Data Yet Found."
                 ) : (
                   ""
                 )}

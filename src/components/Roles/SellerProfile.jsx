@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useId, useRef, useState } from "react";
 import axios from "axios";
 import { apiUrl } from "../../apiUrl";
 import toast, { Toaster } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserSignupDetails } from "../Redux/actions";
 import PendingApproval from ".././PendingApproval";
+import { SocketContext } from "../Socketio/SocketContext";
 
 const SellerProfile = () => {
   const location = useLocation();
@@ -19,6 +20,14 @@ const SellerProfile = () => {
   const [userdata, setuserdata] = useState(null);
   const gotUserData = useSelector((state) => state.userReducer.userdata);
   const navigate = useNavigate();
+  let userdatal = localStorage.getItem("cUser");
+  let userdataparsed = JSON.parse(userdatal);
+  let buyerId = userdataparsed._id;
+  const socket = useContext(SocketContext); // use the socket connection...
+
+  // These ids for the chat, but i will need other userid for to do the message to him.
+  let alsoLoggedInUserId = userdataparsed._id;
+  let otherUserID = userid;
   console.log("redux data::", gotUserData);
   let dispatch = useDispatch();
   const [inputs, setInputs] = useState({
@@ -28,11 +37,23 @@ const SellerProfile = () => {
     productImg: "",
   });
 
+   useEffect(() => {
+     let userdata = localStorage.getItem("cUser");
+    let userdataparsed = JSON.parse(userdata);
+    if (socket) {
+      socket.emit("saveUserID", { userdata: userdataparsed });
+    }
+  }, [socket]);
+  
   useEffect(() => {
     getAllUserData();
     getAllProductsData();
   }, [rerender]);
 
+
+  
+
+  
   const switchToBuyer = async () => {
     try {
       let userType = "buyer";
@@ -72,8 +93,8 @@ const SellerProfile = () => {
       let { data } = await axios.get(`${apiUrl}/user/getUserData/${userid}`);
       console.log("let logs the user data", data);
       setuserdata(data.data);
-      localStorage.setItem("cUser", JSON.stringify(data.data));
-      dispatch(UserSignupDetails(data.data));
+      // localStorage.setItem("cUser", JSON.stringify(data.data));
+      // dispatch(UserSignupDetails(data.data));
     } catch (error) {
       console.log("Err in function getAllUserData", error);
     }
@@ -156,7 +177,7 @@ const SellerProfile = () => {
             {!location.state.userVisit && (
               <>
                 <button
-                  onClick={() => navigate(`/seller/inbox/${userid}`)}
+                  onClick={() => navigate(`/seller/inbox/${userid}`,{state: { sellerid: buyerId}})}
                   type="button"
                   class="relative inline-flex items-center p-3 text-sm font-medium text-center text-white   rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 border"
                 >
@@ -263,7 +284,14 @@ const SellerProfile = () => {
                       Switch To Buyer
                     </button>
                   )}
-                  <button className="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2">
+                  <button
+                    onClick={() =>
+                      navigate(`/buyer/inbox/${alsoLoggedInUserId}`, {
+                        state: { otherUserID: otherUserID},
+                      })
+                    }
+                    className="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2"
+                  >
                     Message
                   </button>
                 </div>

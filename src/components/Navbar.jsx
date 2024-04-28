@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiUrl } from "../apiUrl";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { SocketContext } from "./Socketio/SocketContext";
 
 const Navbar = () => {
   const [showdropdown, setshowdropdown] = useState(false);
   const [dropdownvalue, setdropdownvalue] = useState("All Categories");
   const navigate = useNavigate();
+  const socket = useContext(SocketContext); // use the socket connection...
+  useEffect(() => {
+     let userdata = localStorage.getItem("cUser");
+    let userdataparsed = JSON.parse(userdata);
+    if (socket) {
+      socket.emit("saveUserID", { userdata: userdataparsed });
+    }
+  }, [socket]);
+
   const handleDropDownClick = (value) => {
     setdropdownvalue(value);
     setshowdropdown(false);

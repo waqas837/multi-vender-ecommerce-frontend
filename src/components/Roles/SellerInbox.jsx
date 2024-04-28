@@ -1,420 +1,228 @@
-import React from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { SocketContext } from "../Socketio/SocketContext";
+import { apiUrl } from "../../apiUrl";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const SellerInbox = () => {
+  const [messageText, setmessageText] = useState(null);
+  const [Room, setRoom] = useState(null);
+  const [Email, setEmail] = useState(null);
+  const [rerender, setrerender] = useState(false);
+  const ScrollMe = useRef();
+  const [Participants, setParticipants] = useState([]);
+  const [selectedChatList, setselectedChatList] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(false);
+  const { userid: buyerid } = useParams(); // me as buyer id
+  let location = useLocation();
+  let sellerid = location.state.sellerid;
+  const socket = useContext(SocketContext); // use the socket connection...
+  let alsoLoggedInUserId = buyerid;
+  let userdata = localStorage.getItem("cUser");
+  let userdataparsed = JSON.parse(userdata)
+  useEffect(() => {
+    let userdata = localStorage.getItem("cUser");
+    let userdataparsed = JSON.parse(userdata);
+    if (socket) {
+      socket.emit("saveUserID", { userdata: userdataparsed });
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    loadParticipantForLoggedInUser(alsoLoggedInUserId);
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("recieveMessage", (data) => {
+        console.log("recieveMessage", data)
+        setActiveChatId(data.senderid);
+        selectChat(data.senderid);
+        setselectedChatList((prevList) => [...prevList, data]);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      if (ScrollMe.current) {
+        ScrollMe.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    }
+  }, [socket, selectedChatList]);
+
+  const loadParticipantForLoggedInUser = async (alsoLoggedInUserId) => {
+    try {
+      let { data } = await axios.get(
+        `${apiUrl}/user/loadParticipants/${alsoLoggedInUserId}`
+      );
+      if (data.success) {
+        setParticipants(data.data[0].messagers);
+        setActiveChatId(data.data[0].messagers[0]._id);
+        selectChat(
+          data.data[0].messagers[0]._id,
+          data.data[0].messagers[0].email
+        );
+      }
+    } catch (error) {
+      console.log("error in loadParticipantForLoggedInUser", error);
+    }
+  };
+  // with current other user (get this user and append at the top arr)
+  // we have to get the data from database while page re-loading
+  const sendMessage = () => {
+    if (messageText) {
+      socket.emit("messageSent", {
+        senderid: buyerid, // these are actually opposite
+        recieverId: activeChatId ? activeChatId : sellerid,
+        messageText,
+        Room: Room ? Room : "",
+      });
+
+      let foramat = {
+        _id: null,
+        unread: true,
+        messagesItself: {
+          messagesItself: { [alsoLoggedInUserId]: messageText },
+        },
+        createdAt: null,
+        updatedAt: null,
+        __v: 0,
+      };
+
+      toast("Message Sent");
+      setselectedChatList((prevList) => [...prevList, foramat]);
+      setActiveChatId(activeChatId);
+      selectChat(activeChatId,userdataparsed.email);
+      window.scrollTo(0, document.body.scrollHeight);
+      setmessageText("");
+      setrerender(!rerender);
+    } else {
+      setmessageText("");
+      toast.error("Please write something");
+    }
+  };
+
+  const loadParticipantchatForSelectedUser = async (
+    otherUserID,
+    alsoLoggedInUserId
+  ) => {
+    try {
+      let { data } = await axios.get(
+        `${apiUrl}/user/loadParticipantsChat/${alsoLoggedInUserId}/${otherUserID}`
+      );
+      console.log("selectedChatList", data.messages);
+      setselectedChatList(data.messages);
+      if (data.success) {
+      }
+    } catch (error) {
+      console.log("error in loadParticipantForLoggedInUser", error);
+    }
+  };
+
+  const selectChat = async (userid, email) => {
+    setActiveChatId(userid);
+    setEmail(email?.split("@")[0]);
+    // also get the messages data
+    // we have 2 things select userid and loggedin user and then we load their chats.
+    let otherUserID = userid;
+    await loadParticipantchatForSelectedUser(otherUserID, alsoLoggedInUserId);
+  };
   return (
     <div>
+      <Toaster />
       <main className="flex w-full h-full shadow-lg rounded-3xl">
-        <section className="flex flex-col w-2/12 bg-white rounded-l-3xl">
-          <div className="w-16 mx-auto mt-12 mb-20 p-4 bg-indigo-600 rounded-2xl text-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1"
-                d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"
-              />
-            </svg>
-          </div>
-          <nav className="relative flex flex-col py-4 items-center">
-            <a
-              href="#"
-              className="relative w-16 p-4 bg-purple-100 text-purple-900 rounded-2xl mb-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"
-                />
-              </svg>
-              <span className="absolute -top-2 -right-2 bg-red-600 h-6 w-6 p-2 flex justify-center items-center text-white rounded-full">
-                3
-              </span>
-            </a>
-            <a
-              href="#"
-              className="w-16 p-4 border text-gray-700 rounded-2xl mb-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
-              </svg>
-            </a>
-            <a
-              href="#"
-              className="w-16 p-4 border text-gray-700 rounded-2xl mb-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </a>
-            <a
-              href="#"
-              className="w-16 p-4 border text-gray-700 rounded-2xl mb-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                />
-              </svg>
-            </a>
-            <a
-              href="#"
-              className="w-16 p-4 border text-gray-700 rounded-2xl mb-24"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </a>
-            <a href="#" className="w-16 p-4 border text-gray-700 rounded-2xl">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </a>
-          </nav>
-        </section>
-        <section className="flex flex-col pt-3 w-4/12 bg-gray-50 h-full overflow-y-scroll">
-          <label className="px-3">
-            <input
-              className="rounded-lg p-4 bg-gray-100 transition duration-200 focus:outline-none focus:ring-2 w-full"
-              placeholder="Search..."
-            />
-          </label>
-
+        <section className="flex flex-col pt-3 w-3/12 bg-gray-50 h-full overflow-y-scroll fixed">
+          {/* list for participants of the users, select one then we load the chat */}
           <ul className="mt-6">
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
-            <li className="py-5 border-b px-3 bg-indigo-600 text-white">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md">23m ago</p>
-              </a>
-              <div className="text-md">You have been invited!</div>
-            </li>
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
-            <li className="py-5 border-b px-3 transition hover:bg-indigo-100">
-              <a href="#" className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Akhil Gautam</h3>
-                <p className="text-md text-gray-400">23m ago</p>
-              </a>
-              <div className="text-md italic text-gray-400">
-                You have been invited!
-              </div>
-            </li>
+            <h1 className="text-center text-lg font-bold text-gray-500 my-2 underline">
+              <span className="flex justify-evenly items-center w-[150px]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path d="M3.505 2.365A41.369 41.369 0 0 1 9 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 0 0-.577-.069 43.141 43.141 0 0 0-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 0 1 5 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914Z" />
+                  <path d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 0 0 1.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.915V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0 0 14 6Z" />
+                </svg>
+                <span>Chat List</span>
+              </span>
+            </h1>
+            {Participants &&
+              Participants.map(
+                (val, index) =>
+                  alsoLoggedInUserId !== val._id && (
+                    <>
+                      <div
+                        onClick={() => selectChat(val._id, val.email)}
+                        className={`${
+                          val._id === activeChatId &&
+                          "bg-blue-500 shadow-lg rounded-lg text-white"
+                        } py-3 border-b px-3 transition hover:bg-indigo-100 cursor-pointer my-1`}
+                        key={index + 1}
+                      >
+                        <h3 className="text-lg font-semibold">
+                          {val.email.split("@")[0]}
+                        </h3>
+                      </div>
+                    </>
+                  )
+              )}
           </ul>
         </section>
-        <section className="w-6/12 px-4 flex flex-col bg-white rounded-r-3xl">
-          <div className="flex justify-between items-center h-48 border-b-2 mb-8">
-            <div className="flex space-x-4 items-center">
-              <div className="h-12 w-12 rounded-full overflow-hidden">
-                <img
-                  src="https://bit.ly/2KfKgdy"
-                  loading="lazy"
-                  className="h-full w-full object-cover"
-                />
+        <section className="w-6/12 px-4 flex flex-col bg-white rounded-r-3xl ml-96">
+          {selectedChatList &&
+            selectedChatList.map((val, index) => (
+              <div key={index}>
+                {val.messagesItself[alsoLoggedInUserId] && (
+                  <section className="mb-20">
+                    <p className="mb-3">Me</p>
+                    <p className="shadow-md w-2/12 p-3 inline bg-slate-400 text-white rounded-lg ">
+                      {val.messagesItself[alsoLoggedInUserId]}
+                    </p>
+                  </section>
+                )}
+                {val.messagesItself[activeChatId] && (
+                  <section className="ml-auto">
+                    <p className="mb-3">{Email && Email}</p>
+                    <p className="shadow-md w-2/12 p-3 inline bg-slate-400 text-white rounded-lg ">
+                      {val.messagesItself[activeChatId]}
+                    </p>
+                  </section>
+                )}
               </div>
-              <div className="flex flex-col">
-                <h3 className="font-semibold text-lg">Akhil Gautam</h3>
-                <p className="text-light text-gray-400">
-                  akhil.gautam123@gmail.com
-                </p>
-              </div>
-            </div>
-            <div>
-              <ul className="flex text-gray-400 space-x-4">
-                <li className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"
-                    />
-                  </svg>
-                </li>
-                <li className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </li>
-
-                <li className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                    />
-                  </svg>
-                </li>
-                <li className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </li>
-                <li className="w-6 h-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                    />
-                  </svg>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <section>
-            <h1 className="font-bold text-2xl">We need UI/UX designer</h1>
-            <article className="mt-8 text-gray-500 leading-7 tracking-wider">
-              <p>Hi Akhil,</p>
-              <p>
-                Design and develop enterprise-facing UI and consumer-facing UI
-                as well as REST API backends.Work with Product Managers and User
-                Experience designers to create an appealing user experience for
-                desktop web and mobile web.
-              </p>
-              <footer className="mt-12">
-                <p>Thanks & Regards,</p>
-                <p>Alexandar</p>
-              </footer>
-            </article>
-            <ul className="flex space-x-4 mt-12">
-              <li className="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-indigo-600 hover:bg-blue-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </li>
-              <li className="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-blue-800 hover:bg-blue-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                  />
-                </svg>
-              </li>
-              <li className="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-pink-400 hover:bg-blue-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                  />
-                </svg>
-              </li>
-              <li className="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-yellow-500 hover:bg-blue-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
-                  />
-                </svg>
-              </li>
-            </ul>
-          </section>
+            ))}
           <section className="mt-6 border rounded-xl bg-gray-50 mb-3">
-            <textarea
+            <input
               className="w-full bg-gray-50 p-2 rounded-xl"
-              placeholder="Type your reply here..."
-              rows="3"
-            ></textarea>
+              placeholder="Type your message here..."
+              onChange={(e) => setmessageText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault(); // Prevents the default behavior of the Enter key (submitting the form)
+                  sendMessage();
+                }
+              }}
+              value={messageText}
+            ></input>
             <div className="flex items-center justify-between p-2">
-              <button className="h-6 w-6 text-gray-400">
+              <button
+                onClick={sendMessage}
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
+                  stroke-width="1.5"
                   stroke="currentColor"
+                  class="w-6 h-6"
                 >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                    d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
                   />
                 </svg>
-              </button>
-              <button className="bg-purple-600 text-white px-6 py-2 rounded-xl">
-                Reply
+                <span ref={ScrollMe}></span>
               </button>
             </div>
           </section>

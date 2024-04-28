@@ -8,22 +8,29 @@ import BuyerProfile from "./components/Roles/BuyerProfile";
 import AdminLogin from "./components/Roles/Admin/AdminLogin";
 import SellerInbox from "./components/Roles/SellerInbox";
 import BuyerInbox from "./components/Roles/BuyerInbox";
+import { SocketProvider } from "./components/Socketio/SocketContext";
 
 function App() {
   return (
     <>
-      <Router>
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/signup" element={<Signup />} />
-          <Route exact path="/seller/:userid" element={<SellerProfile />} />
-          <Route exact path="/seller/inbox/:userid" element={<SellerInbox />} />
-          <Route exact path="/buyer/inbox/:userid" element={<BuyerInbox />} />
-          <Route exact path="/buyer/:buyerid" element={<BuyerProfile />} />
-          <Route exact path="/Admin" element={<AdminLogin />} />
-        </Routes>
-      </Router>
+      <SocketProvider>
+        <Router>
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route exact path="/login" element={<Login />} />
+            <Route exact path="/signup" element={<Signup />} />
+            <Route exact path="/seller/:userid" element={<SellerProfile />} />
+            <Route
+              exact
+              path="/seller/inbox/:userid"
+              element={<SellerInbox />}
+            />
+            <Route exact path="/buyer/inbox/:userid" element={<BuyerInbox />} />
+            <Route exact path="/buyer/:buyerid" element={<BuyerProfile />} />
+            <Route exact path="/Admin" element={<AdminLogin />} />
+          </Routes>
+        </Router>
+      </SocketProvider>
     </>
   );
 }

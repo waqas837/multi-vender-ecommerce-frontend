@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { apiUrl } from "../../apiUrl";
 import toast, { Toaster } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserSignupDetails } from "../Redux/actions";
 import PendingApproval from ".././PendingApproval";
+import { SocketContext } from "../Socketio/SocketContext";
 
 const BuyerProfile = () => {
   const location = useLocation();
@@ -21,6 +22,15 @@ const BuyerProfile = () => {
   useEffect(() => {
     getAllUserData();
   }, [rerender]);
+
+  const socket = useContext(SocketContext); // use the socket connection...
+  useEffect(() => {
+     let userdata = localStorage.getItem("cUser");
+    let userdataparsed = JSON.parse(userdata);
+    if (socket) {
+      socket.emit("saveUserID", { userdata: userdataparsed });
+    }
+  }, [socket]);
 
   const logout = () => {
     localStorage.removeItem("cUser");
@@ -80,7 +90,11 @@ const BuyerProfile = () => {
               {"Buyer Dashboard"}
             </h1>
             <button
-              onClick={() => navigate(`/buyer/inbox/${userid}`)}
+              onClick={() =>
+                navigate(`/buyer/inbox/${userid}`, {
+                  state: { sellerid: userdata._id }, //sellerid message with current
+                })
+              }
               type="button"
               class="relative inline-flex items-center p-3 text-sm font-medium text-center text-white   rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 border"
             >

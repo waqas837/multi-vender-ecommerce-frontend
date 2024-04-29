@@ -9,6 +9,9 @@ import AdminLogin from "./components/Roles/Admin/AdminLogin";
 import SellerInbox from "./components/Roles/SellerInbox";
 import BuyerInbox from "./components/Roles/BuyerInbox";
 import { SocketProvider } from "./components/Socketio/SocketContext";
+import BookingOrder from "./components/Orders/BuyerBookingOrder";
+import SellerOrders from "./components/Orders/SellerOrders";
+import Payment from "./components/Orders/Payment";
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
             <Route exact path="/buyer/inbox/:userid" element={<BuyerInbox />} />
             <Route exact path="/buyer/:buyerid" element={<BuyerProfile />} />
             <Route exact path="/Admin" element={<AdminLogin />} />
+            <Route exact path="/orderBook" element={<BookingOrder />} />
+            <Route exact path="/sellerOrders" element={<SellerOrders />} />
+            <Route exact path="/payment" element={<Payment />} />
           </Routes>
         </Router>
       </SocketProvider>
